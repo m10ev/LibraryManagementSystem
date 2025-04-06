@@ -65,7 +65,7 @@ namespace Business
                 return context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
-                    .First(b => b.Id == id);
+                    .FirstOrDefault(b => b.Id == id);
             }
         }
 
@@ -84,7 +84,7 @@ namespace Business
                 return context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
-                    .First(b => b.ISBN == ISBN);
+                    .FirstOrDefault(b => b.ISBN == ISBN);
             }
         }
 

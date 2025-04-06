@@ -11,10 +11,8 @@ namespace ConsoleApp.Presentation.SubDisplays
     internal class MemberDisplay
     {
         // Business layer objects to interact with data models
-        private AuthorBusiness authorBusiness = new AuthorBusiness();
         private BookBusiness bookBusiness = new BookBusiness();
         private MemberBusiness memberBusiness = new MemberBusiness();
-        private BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
 
         // UI helper to assist with common input/output operations
         private UIHelper uiHelper = new UIHelper();

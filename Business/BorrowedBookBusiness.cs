@@ -17,6 +17,8 @@ namespace Business
                 return context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
                     .ToList();
             }
         }
@@ -28,8 +30,17 @@ namespace Business
                 return context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
-                    .First(bb => bb.BookID == bookId);
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefault(bb => bb.BookID == bookId);
             }
+        }
+
+        public List<BorrowedBook> GetAllBetweenDates(DateTime startDate, DateTime endDate)
+        {
+            return context.BorrowedBooks
+                .Where(bb => bb.BorrowDate >= startDate && bb.BorrowDate <= endDate)
+                .ToList();
         }
 
         public BorrowedBook GetByMemberId(int memberId)
@@ -39,7 +50,22 @@ namespace Business
                 return context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
-                    .First(bb => bb.MemberID == memberId);
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefault(bb => bb.MemberID == memberId);
+            }
+        }
+
+        public BorrowedBook GetByBookIdAndDate(int bookId, DateTime date)
+        {
+            using (context = new LibraryDbContext())
+            {
+                return context.BorrowedBooks
+                    .Include(bb => bb.Book)
+                    .Include(bb => bb.Member)
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefault(bb => bb.BookID == bookId && bb.BorrowDate == date);
             }
         }
 
@@ -57,7 +83,7 @@ namespace Business
             using (context = new LibraryDbContext())
             {
                 var item = context.BorrowedBooks
-                    .FirstOrDefault(bb => bb.BookID == borrowedBook.BookID && bb.MemberID == borrowedBook.MemberID);
+                    .FirstOrDefault(bb => bb.BookID == borrowedBook.BookID);
                 if (item != null)
                 {
                     context.Entry(item).CurrentValues.SetValues(borrowedBook);
@@ -66,12 +92,27 @@ namespace Business
             }
         }
 
-        public void Delete(int bookId, int memberId)
+        public void Delete(int bookId)
         {
             using (context = new LibraryDbContext())
             {
                 var borrowedBook = context.BorrowedBooks
-                    .FirstOrDefault(bb => bb.BookID == bookId && bb.MemberID == memberId);
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefault(bb => bb.BookID == bookId);
+                if (borrowedBook != null)
+                {
+                    context.BorrowedBooks.Remove(borrowedBook);
+                    context.SaveChanges();
+                }
+            }
+        }
+        public void DeleteByIdAndDate(int bookId, DateTime borrowDate)
+        {
+            using (context = new LibraryDbContext())
+            {
+                var borrowedBook = context.BorrowedBooks
+                    .FirstOrDefault(bb => bb.BookID == bookId && bb.BorrowDate == borrowDate);
                 if (borrowedBook != null)
                 {
                     context.BorrowedBooks.Remove(borrowedBook);

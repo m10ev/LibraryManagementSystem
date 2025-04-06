@@ -44,7 +44,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         }
         private void ShowAuthorMenu()
         {
-            uiHelper.ShowHeader("Member Management");
+            uiHelper.ShowHeader("Author Management");
             Console.WriteLine("1. All Authors");
             Console.WriteLine("2. Add Author");
             Console.WriteLine("3. Update Author");

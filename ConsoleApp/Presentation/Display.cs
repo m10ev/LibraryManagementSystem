@@ -15,6 +15,7 @@ namespace ConsoleApp.Presentation
     {
         private AuthorDisplay authorDisplay = new AuthorDisplay();
         private BookDisplay bookDisplay = new BookDisplay();
+        private BorrowedBookDisplay borrowedBookDisplay = new BorrowedBookDisplay();
         private MemberDisplay memberDisplay = new MemberDisplay();
 
         private UIHelper uiHelper = new UIHelper();
@@ -52,9 +53,9 @@ namespace ConsoleApp.Presentation
                     case 3:
                         authorDisplay.AuthorManager();
                         break;
-                    /*case 4:
-                        BorrowedBookManager();
-                        break;*/
+                    case 4:
+                        borrowedBookDisplay.BorrowedBookManager();
+                        break;
                     default:
                         Console.WriteLine("Please select a valid option.");
                         break;

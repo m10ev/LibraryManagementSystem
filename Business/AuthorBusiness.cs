@@ -34,7 +34,7 @@ namespace Business
                 return context.Authors
                     .Include(a => a.Books)
                     .ThenInclude(b => b.BorrowedBooks)
-                    .First(a => a.Id == id);
+                    .FirstOrDefault(a => a.Id == id);
             }
         }
 
