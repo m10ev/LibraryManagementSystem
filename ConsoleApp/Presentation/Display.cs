@@ -14,6 +14,7 @@ namespace ConsoleApp.Presentation
     internal class Display
     {
         private BookDisplay bookDisplay = new BookDisplay();
+        private MemberDisplay memberDisplay = new MemberDisplay();
 
         private UIHelper uiHelper = new UIHelper();
 
@@ -44,10 +45,10 @@ namespace ConsoleApp.Presentation
                     case 1:
                         bookDisplay.BookManager();
                         break;
-                    /*case 2:
-                        MemberManager();
+                    case 2:
+                        memberDisplay.MemberManager();
                         break;
-                    case 3:
+                    /*case 3:
                         AuthorManager();
                         break;
                     case 4:

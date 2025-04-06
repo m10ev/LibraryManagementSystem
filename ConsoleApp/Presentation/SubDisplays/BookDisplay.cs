@@ -58,7 +58,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Displays the main menu for book management.
         /// </summary>
-        public void ShowBookMenu()
+        private void ShowBookMenu()
         {
             uiHelper.ShowHeader("Book Management");
             Console.WriteLine("1. Borrow a Book");
@@ -71,7 +71,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Displays the menu for browsing books by different criteria.
         /// </summary>
-        public void ShowBrowseBooks()
+        private void ShowBrowseBooks()
         {
             uiHelper.ShowHeader("Browse Books");
             Console.WriteLine("1. All Books");
@@ -84,7 +84,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book. First prompts the user to browse books.
         /// </summary>
-        public void Borrow()
+        private void Borrow()
         {
             ShowBrowseBooks(); // Show browsing options
             var operation = uiHelper.ReadIntInput("Please select an option:");
@@ -112,7 +112,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to browse books. Provides different browsing criteria.
         /// </summary>
-        public void Browse()
+        private void Browse()
         {
             ShowBrowseBooks(); // Show browsing options
             var operation = uiHelper.ReadIntInput("Please select an option:");
@@ -139,7 +139,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to add a new book to the system.
         /// Prompts the user for book details and validates the genre.
         /// </summary>
-        public void AddBook()
+        private void AddBook()
         {
             var book = new Book();
             book.Title = uiHelper.ReadStringInput("Please enter the book title:");
@@ -213,7 +213,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to update an existing book's details.
         /// Prompts the user for new values and validates them.
         /// </summary>
-        public void UpdateBook()
+        private void UpdateBook()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
             var book = bookBusiness.Get(bookId);
@@ -264,7 +264,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to delete a book from the system.
         /// Prompts the user for the book ID and removes the book if found.
         /// </summary>
-        public void DeleteBook()
+        private void DeleteBook()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
             var book = bookBusiness.Get(bookId);
@@ -284,7 +284,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints all books in the system.
         /// </summary>
-        public void PrintAllBooks()
+        private void PrintAllBooks()
         {
             var books = bookBusiness.GetAllWithIncludes();
             foreach (var book in books)
@@ -296,7 +296,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints books filtered by genre.
         /// </summary>
-        public void PrintByGenre()
+        private void PrintByGenre()
         {
             var genre = uiHelper.ReadStringInput("Please enter the genre:");
             var filteredBooks = bookBusiness.GetAllByGenreWithIncludes(genre);
@@ -317,7 +317,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints a book found by its ID.
         /// </summary>
-        public void PrintById()
+        private void PrintById()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
             var book = bookBusiness.GetWithIncludes(bookId);
@@ -335,7 +335,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints a book found by its ISBN.
         /// </summary>
-        public void PrintByISBN()
+        private void PrintByISBN()
         {
             var bookISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
             var book = bookBusiness.GetByISBNWithIncludes(bookISBN);
@@ -354,7 +354,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book by its ID.
         /// </summary>
-        public void BorrowById()
+        private void BorrowById()
         {
             var bookId = uiHelper.ReadIntInput("Please select a book by ID:");
             var book = bookBusiness.Get(bookId);
@@ -392,7 +392,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book by its ISBN.
         /// </summary>
-        public void BorrowByISBN()
+        private void BorrowByISBN()
         {
             string bookISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
             var book = bookBusiness.GetByISBN(bookISBN);
