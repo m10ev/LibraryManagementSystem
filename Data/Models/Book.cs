@@ -1,0 +1,33 @@
+﻿using Data.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Data.Models
+{
+    public class Book
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        [MaxLength(55)]
+        public string Title { get; set; }
+        [Required]
+        [StringLength(13, MinimumLength = 10, ErrorMessage = "ISBN must be between 10 and 13 characters.")]
+        public Genre Genre { get; set; }
+        public string ISBN { get; set; }
+        [Required]
+        public DateTime PublicationDate { get; set; }
+        [Required]
+        public int AuthorID { get; set; }
+
+        [ForeignKey("AuthorID")]
+        public Author? Author { get; set; }
+
+        public ICollection<BorrowedBook> BorrowedBooks { get; set; }
+    }
+}
