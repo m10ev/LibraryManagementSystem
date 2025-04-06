@@ -26,6 +26,17 @@ namespace Business
             }
         }
 
+        public Member GetWithIncludes(int id)
+        {
+            using (context = new LibraryDbContext())
+            {
+                return context.Members
+                    .Include(m => m.BorrowedBooks)
+                    .ThenInclude(bb => bb.Book)
+                    .First(m => m.Id == id);
+            }
+        }
+
         public void Add(Member member)
         {
             using (context = new LibraryDbContext())

@@ -13,6 +13,7 @@ namespace ConsoleApp.Presentation
 {
     internal class Display
     {
+        private AuthorDisplay authorDisplay = new AuthorDisplay();
         private BookDisplay bookDisplay = new BookDisplay();
         private MemberDisplay memberDisplay = new MemberDisplay();
 
@@ -48,10 +49,10 @@ namespace ConsoleApp.Presentation
                     case 2:
                         memberDisplay.MemberManager();
                         break;
-                    /*case 3:
-                        AuthorManager();
+                    case 3:
+                        authorDisplay.AuthorManager();
                         break;
-                    case 4:
+                    /*case 4:
                         BorrowedBookManager();
                         break;*/
                     default:

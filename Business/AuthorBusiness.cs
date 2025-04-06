@@ -18,11 +18,23 @@ namespace Business
             }
         }
 
+
         public Author Get(int id)
         {
             using (context = new LibraryDbContext())
             {
                 return context.Authors.Find(id);
+            }
+        }
+
+        public Author GetWithIncludes(int id)
+        {
+            using (context = new LibraryDbContext())
+            {
+                return context.Authors
+                    .Include(a => a.Books)
+                    .ThenInclude(b => b.BorrowedBooks)
+                    .First(a => a.Id == id);
             }
         }
 

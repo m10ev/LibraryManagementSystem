@@ -193,6 +193,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             }
 
             // Input and assign other book details
+            book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
             book.ISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
             var authorId = uiHelper.ReadIntInput("Please enter the author ID:");
             var author = authorBusiness.Get(authorId);
@@ -239,6 +240,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                 }
 
                 // Input new ISBN and author details
+                book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
                 book.ISBN = uiHelper.ReadStringInput("Please enter the new book ISBN:");
                 var authorId = uiHelper.ReadIntInput("Please enter the new author ID:");
                 var author = authorBusiness.Get(authorId);
@@ -289,7 +291,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             var books = bookBusiness.GetAllWithIncludes();
             foreach (var book in books)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
             }
         }
 
@@ -305,7 +307,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             {
                 foreach (var book in filteredBooks)
                 {
-                    Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, {book.ISBN}");
+                    Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
                 }
             }
             else
@@ -324,7 +326,7 @@ namespace ConsoleApp.Presentation.SubDisplays
 
             if (book != null)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
             }
             else
             {
@@ -342,7 +344,7 @@ namespace ConsoleApp.Presentation.SubDisplays
 
             if (book != null)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
             }
             else
             {
@@ -357,7 +359,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         private void BorrowById()
         {
             var bookId = uiHelper.ReadIntInput("Please select a book by ID:");
-            var book = bookBusiness.Get(bookId);
+            var book = bookBusiness.GetWithIncludes(bookId);
 
             if (book != null)
             {
@@ -367,6 +369,11 @@ namespace ConsoleApp.Presentation.SubDisplays
 
                 if (member != null)
                 {
+                    if (book.BorrowedBooks.Any(bb => bb.ReturnDate == null))
+                    {
+                        Console.WriteLine($"Book {book.Title} with ID: {book.Id} is already borrowed.");
+                        return; // Book is already borrowed, exit the method
+                    }
                     // Create a borrowed book record
                     var borrowedBook = new BorrowedBook
                     {
@@ -395,7 +402,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         private void BorrowByISBN()
         {
             string bookISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
-            var book = bookBusiness.GetByISBN(bookISBN);
+            var book = bookBusiness.GetByISBNWithIncludes(bookISBN);
 
             if (book != null)
             {
@@ -405,6 +412,11 @@ namespace ConsoleApp.Presentation.SubDisplays
 
                 if (member != null)
                 {
+                    if (book.BorrowedBooks.Any(bb => bb.ReturnDate == null))
+                    {
+                        Console.WriteLine($"Book {book.Title} with ID: {book.Id} is already borrowed.");
+                        return; // Book is already borrowed, exit the method
+                    }
                     var borrowedBook = new BorrowedBook
                     {
                         BookID = book.Id,
