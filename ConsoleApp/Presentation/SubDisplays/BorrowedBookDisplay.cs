@@ -10,41 +10,50 @@ namespace ConsoleApp.Presentation.SubDisplays
     internal class BorrowedBookDisplay
     {
         // Business layer objects to interact with data models
-        private AuthorBusiness authorBusiness = new AuthorBusiness();
-        private BookBusiness bookBusiness = new BookBusiness();
-        private MemberBusiness memberBusiness = new MemberBusiness();
-        private BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
+        private readonly AuthorBusiness authorBusiness = new AuthorBusiness();
+        private readonly BookBusiness bookBusiness = new BookBusiness();
+        private readonly MemberBusiness memberBusiness = new MemberBusiness();
+        private readonly BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
 
         // UI helper to assist with common input/output operations
-        private UIHelper uiHelper = new UIHelper();
+        private readonly UIHelper uiHelper = new UIHelper();
 
-        public void BorrowedBookManager()
+        /// <summary>
+        /// Main function to manage borrowed book-related operations.
+        /// Displays a menu with options like showing, updating, fetching, and deleting borrowed books.
+        /// </summary>
+        public async Task BorrowedBookManager()
         {
-            ShowBorrowedBookMenu();
+            ShowBorrowedBookMenu(); // Display the borrowed book management menu
             var operation = uiHelper.ReadIntInput("Please select an option:");
+
+            // Execute the selected operation based on user's choice
             switch (operation)
             {
                 case 1:
-                    ShowAllBorrowedBooks();
+                    await ShowAllBorrowedBooks(); // Display all borrowed books
                     break;
                 case 2:
-                    ShowAllCurrentlyBorrowedBooks();
+                    await ShowAllCurrentlyBorrowedBooks(); // Display all currently borrowed books
                     break;
                 case 3:
-                    UpdateBorrowedBook();
+                    await UpdateBorrowedBook(); // Update details of an existing borrowed book
                     break;
                 case 4:
-                    FetchBorrowedBookByIdAndDate();
+                    await FetchBorrowedBookByIdAndDate(); // Fetch a borrowed book by ID and borrow date
                     break;
                 case 5:
-                    DeleteBorrowedBook();
+                    await DeleteBorrowedBook(); // Delete a borrowed book record
                     break;
                 default:
-                    Console.WriteLine("Please select a valid option.");
+                    Console.WriteLine("Please select a valid option."); // Handle invalid options
                     break;
             }
         }
 
+        /// <summary>
+        /// Displays the menu for managing borrowed book operations.
+        /// </summary>
         private void ShowBorrowedBookMenu()
         {
             uiHelper.ShowHeader("Borrowed Books History Management");
@@ -55,22 +64,29 @@ namespace ConsoleApp.Presentation.SubDisplays
             Console.WriteLine("5. Delete Borrowed Book");
         }
 
+        /// <summary>
+        /// Displays the menu for deleting borrowed book history records.
+        /// </summary>
         private void ShowDeleteBorrowedBookHystoryMenu()
         {
             uiHelper.ShowHeader("Borrowed Books History Management");
-            Console.WriteLine("1. Delete Most Recent Hystory of Borrowed Book by Id");
+            Console.WriteLine("1. Delete Most Recent History of Borrowed Book by Id");
             Console.WriteLine("2. Delete Borrowed Book History by Id and Date");
             Console.WriteLine("3. Delete Between Dates");
         }
 
-        private void ShowAllBorrowedBooks()
+        /// <summary>
+        /// Displays all borrowed books, including return dates if available.
+        /// </summary>
+        private async Task ShowAllBorrowedBooks()
         {
-            var borrowedBooks = borrowedBookBusiness.GetAll();
+            var borrowedBooks = await borrowedBookBusiness.GetAllAsync(); // Retrieve all borrowed books
             if (borrowedBooks.Count == 0)
             {
-                Console.WriteLine("No borrowed books found.");
+                Console.WriteLine("No borrowed books found."); // Handle case with no borrowed books
                 return;
             }
+            // Display each borrowed book's details
             foreach (var borrowedBook in borrowedBooks)
             {
                 if (borrowedBook.ReturnDate == null)
@@ -84,46 +100,57 @@ namespace ConsoleApp.Presentation.SubDisplays
             }
         }
 
-        private void ShowAllCurrentlyBorrowedBooks()
+        /// <summary>
+        /// Displays all currently borrowed books, i.e., those without a return date.
+        /// </summary>
+        private async Task ShowAllCurrentlyBorrowedBooks()
         {
-            var borrowedBooks = borrowedBookBusiness.GetAll();
-            if (borrowedBooks.Any(bb => bb.ReturnDate == null))
+            var borrowedBooks = await borrowedBookBusiness.GetAllAsync(); // Retrieve all borrowed books
+            if (borrowedBooks.Any(bb => bb.ReturnDate == null)) // Check for books that are currently borrowed
             {
-                Console.WriteLine("No currently borrowed books found.");
+                Console.WriteLine("No currently borrowed books found."); // Handle case with no currently borrowed books
                 return;
             }
-            borrowedBooks = borrowedBooks.Where(bb => bb.ReturnDate == null).ToList();
+            borrowedBooks = borrowedBooks.Where(bb => bb.ReturnDate == null).ToList(); // Filter out books that have not been returned
+            // Display each currently borrowed book's details
             foreach (var borrowedBook in borrowedBooks)
             {
                 Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Due Date: {borrowedBook.ReturnDate}");
             }
         }
 
-        private void UpdateBorrowedBook()
+        /// <summary>
+        /// Allows the user to update the due date of a borrowed book.
+        /// </summary>
+        private async Task UpdateBorrowedBook()
         {
-            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to update:");
-            var borrowedBook = borrowedBookBusiness.GetByBookId(borrowedBookId);
+            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to update:"); // Prompt for borrowed book ID
+            var borrowedBook = await borrowedBookBusiness.GetByBookIdAsync(borrowedBookId); // Fetch borrowed book by ID
             if (borrowedBook == null)
             {
-                Console.WriteLine("Borrowed book not found.");
+                Console.WriteLine("Borrowed book not found."); // Handle case where borrowed book doesn't exist
                 return;
             }
-            var newDueDate = DateTime.Parse(uiHelper.ReadStringInput("Enter new Due date (yyyy-mm-dd):"));
-            borrowedBook.DueDate = newDueDate;
-            borrowedBookBusiness.Update(borrowedBook);
+            var newDueDate = DateTime.Parse(uiHelper.ReadStringInput("Enter new Due date (yyyy-mm-dd):")); // Prompt for new due date
+            borrowedBook.DueDate = newDueDate; // Update the due date
+            await borrowedBookBusiness.UpdateAsync(borrowedBook); // Save the updated borrowed book details
             Console.WriteLine("Borrowed book updated successfully.");
         }
 
-        private void FetchBorrowedBookByIdAndDate()
+        /// <summary>
+        /// Fetches and displays a borrowed book's details by its ID and borrow date.
+        /// </summary>
+        private async Task FetchBorrowedBookByIdAndDate()
         {
-            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to fetch:");
-            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):"));
-            var borrowedBook = borrowedBookBusiness.GetByBookIdAndDate(borrowedBookId, borrowedBookDate);
+            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to fetch:"); // Prompt for borrowed book ID
+            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):")); // Prompt for borrow date
+            var borrowedBook = await borrowedBookBusiness.GetByBookIdAndDateAsync(borrowedBookId, borrowedBookDate); // Fetch borrowed book by ID and date
             if (borrowedBook == null)
             {
-                Console.WriteLine("Borrowed book not found.");
+                Console.WriteLine("Borrowed book not found."); // Handle case where borrowed book doesn't exist
                 return;
             }
+            // Display borrowed book details based on return date status
             if (borrowedBook.ReturnDate == null)
             {
                 Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Due Date: {borrowedBook.DueDate}");
@@ -134,67 +161,80 @@ namespace ConsoleApp.Presentation.SubDisplays
             }
         }
 
-        private void DeleteBorrowedBook()
+        /// <summary>
+        /// Allows the user to delete a borrowed book record.
+        /// </summary>
+        private async Task DeleteBorrowedBook()
         {
-            ShowDeleteBorrowedBookHystoryMenu();
-            var operation = uiHelper.ReadIntInput("Please select an option:");
+            ShowDeleteBorrowedBookHystoryMenu(); // Display delete options menu
+            var operation = uiHelper.ReadIntInput("Please select an option:"); // Prompt for the delete operation choice
             switch (operation)
             {
                 case 1:
-                    DeleteMostRecentBorrowedBookById();
+                    await DeleteMostRecentBorrowedBookById(); // Delete most recent borrowed book by ID
                     break;
                 case 2:
-                    DeleteBorrowedBookByIdAndDate();
+                    await DeleteBorrowedBookByIdAndDate(); // Delete borrowed book by ID and date
                     break;
                 case 3:
-                    DeleteBetweenDates();
+                    await DeleteBetweenDates(); // Delete borrowed books between specific dates
                     break;
                 default:
-                    Console.WriteLine("Please select a valid option.");
+                    Console.WriteLine("Please select a valid option."); // Handle invalid options
                     break;
             }
         }
 
-        private void DeleteMostRecentBorrowedBookById()
+        /// <summary>
+        /// Deletes the most recent borrowed book record by its ID.
+        /// </summary>
+        private async Task DeleteMostRecentBorrowedBookById()
         {
-            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to delete:");
-            var borrowedBook = borrowedBookBusiness.GetByBookId(borrowedBookId);
+            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to delete:"); // Prompt for borrowed book ID
+            var borrowedBook = await borrowedBookBusiness.GetByBookIdAsync(borrowedBookId); // Fetch borrowed book by ID
             if (borrowedBook == null)
             {
-                Console.WriteLine("Borrowed book not found.");
+                Console.WriteLine("Borrowed book not found."); // Handle case where borrowed book doesn't exist
                 return;
             }
-            borrowedBookBusiness.Delete(borrowedBookId);
+            await borrowedBookBusiness.DeleteAsync(borrowedBookId); // Delete the borrowed book
             Console.WriteLine("Borrowed book deleted successfully.");
         }
 
-        private void DeleteBorrowedBookByIdAndDate()
+        /// <summary>
+        /// Deletes a borrowed book record by its ID and borrow date.
+        /// </summary>
+        private async Task DeleteBorrowedBookByIdAndDate()
         {
-            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to delete:");
-            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):"));
-            var borrowedBook = borrowedBookBusiness.GetByBookIdAndDate(borrowedBookId, borrowedBookDate);
+            var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to delete:"); // Prompt for borrowed book ID
+            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):")); // Prompt for borrow date
+            var borrowedBook = await borrowedBookBusiness.GetByBookIdAndDateAsync(borrowedBookId, borrowedBookDate); // Fetch borrowed book by ID and date
             if (borrowedBook == null)
             {
-                Console.WriteLine("Borrowed book not found.");
+                Console.WriteLine("Borrowed book not found."); // Handle case where borrowed book doesn't exist
                 return;
             }
-            borrowedBookBusiness.DeleteByIdAndDate(borrowedBookId, borrowedBookDate);
+            await borrowedBookBusiness.DeleteByIdAndDateAsync(borrowedBookId, borrowedBookDate); // Delete the borrowed book by ID and date
             Console.WriteLine("Borrowed book deleted successfully.");
         }
 
-        private void DeleteBetweenDates()
+        /// <summary>
+        /// Deletes all borrowed books between two specific dates.
+        /// </summary>
+        private async Task DeleteBetweenDates()
         {
-            var startDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the start date (yyyy-mm-dd):"));
-            var endDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the end date (yyyy-mm-dd):"));
-            var borrowedBooks = borrowedBookBusiness.GetAllBetweenDates(startDate, endDate);
+            var startDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the start date (yyyy-mm-dd):")); // Prompt for start date
+            var endDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the end date (yyyy-mm-dd):")); // Prompt for end date
+            var borrowedBooks = await borrowedBookBusiness.GetAllBetweenDatesAsync(startDate, endDate); // Fetch borrowed books between the given dates
             if (borrowedBooks.Count == 0)
             {
-                Console.WriteLine("No borrowed books found between the specified dates.");
+                Console.WriteLine("No borrowed books found between the specified dates."); // Handle case where no books are found
                 return;
             }
+            // Delete each borrowed book between the specified dates
             foreach (var borrowedBook in borrowedBooks)
             {
-                borrowedBookBusiness.DeleteByIdAndDate(borrowedBook.BookID, borrowedBook.BorrowDate);
+                await borrowedBookBusiness.DeleteByIdAndDateAsync(borrowedBook.BookID, borrowedBook.BorrowDate);
             }
         }
     }

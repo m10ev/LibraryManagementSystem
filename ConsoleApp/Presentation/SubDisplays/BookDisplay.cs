@@ -13,19 +13,19 @@ namespace ConsoleApp.Presentation.SubDisplays
     internal class BookDisplay
     {
         // Business layer objects to interact with data models
-        private AuthorBusiness authorBusiness = new AuthorBusiness();
-        private BookBusiness bookBusiness = new BookBusiness();
-        private MemberBusiness memberBusiness = new MemberBusiness();
-        private BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
+        private readonly AuthorBusiness authorBusiness = new AuthorBusiness();
+        private readonly BookBusiness bookBusiness = new BookBusiness();
+        private readonly MemberBusiness memberBusiness = new MemberBusiness();
+        private readonly BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
 
         // UI helper to assist with common input/output operations
-        private UIHelper uiHelper = new UIHelper();
+        private readonly UIHelper uiHelper = new UIHelper();
 
         /// <summary>
         /// Main function to manage book-related operations.
         /// Provides a menu for the user to choose actions like borrowing, browsing, adding, updating, or deleting books.
         /// </summary>
-        public void BookManager()
+        public async Task BookManager()
         {
             ShowBookMenu(); // Display the book management menu
             var operation = uiHelper.ReadIntInput("Please select an option:");
@@ -34,19 +34,19 @@ namespace ConsoleApp.Presentation.SubDisplays
             switch (operation)
             {
                 case 1:
-                    Borrow(); // Borrow a book
+                    await Borrow(); // Borrow a book
                     break;
                 case 2:
-                    Browse(); // Browse available books
+                    await Browse(); // Browse available books
                     break;
                 case 3:
-                    AddBook(); // Add a new book to the system
+                    await AddBook(); // Add a new book to the system
                     break;
                 case 4:
-                    UpdateBook(); // Update book details
+                    await UpdateBook(); // Update book details
                     break;
                 case 5:
-                    DeleteBook(); // Delete a book from the system
+                    await DeleteBook(); // Delete a book from the system
                     break;
                 default:
                     Console.WriteLine("Invalid option."); // Invalid choice handling
@@ -84,7 +84,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book. First prompts the user to browse books.
         /// </summary>
-        private void Borrow()
+        private async Task Borrow()
         {
             ShowBrowseBooks(); // Show browsing options
             var operation = uiHelper.ReadIntInput("Please select an option:");
@@ -93,18 +93,21 @@ namespace ConsoleApp.Presentation.SubDisplays
             switch (operation)
             {
                 case 1:
-                    PrintAllBooks(); // Display all books
-                    BorrowById(); // Borrow by ID
+                    await PrintAllBooks(); // Display all books
+                    await BorrowById(); // Borrow by ID
                     break;
                 case 2:
-                    PrintByGenre(); // Display books by genre
-                    BorrowById(); // Borrow by ID
+                    await PrintByGenre(); // Display books by genre
+                    await BorrowById(); // Borrow by ID
                     break;
                 case 3:
-                    BorrowById(); // Directly borrow by ID
+                    await BorrowById(); // Directly borrow by ID
                     break;
                 case 4:
-                    BorrowByISBN(); // Borrow by ISBN
+                    await BorrowByISBN(); // Borrow by ISBN
+                    break;
+                default:
+                    Console.WriteLine("Invalid option."); // Invalid choice handling
                     break;
             }
         }
@@ -112,7 +115,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to browse books. Provides different browsing criteria.
         /// </summary>
-        private void Browse()
+        private async Task Browse()
         {
             ShowBrowseBooks(); // Show browsing options
             var operation = uiHelper.ReadIntInput("Please select an option:");
@@ -121,16 +124,19 @@ namespace ConsoleApp.Presentation.SubDisplays
             switch (operation)
             {
                 case 1:
-                    PrintAllBooks(); // Display all books
+                    await PrintAllBooks(); // Display all books
                     break;
                 case 2:
-                    PrintByGenre(); // Display books by genre
+                    await PrintByGenre(); // Display books by genre
                     break;
                 case 3:
-                    PrintById(); // Display books by ID
+                    await PrintById(); // Display books by ID
                     break;
                 case 4:
-                    PrintByISBN(); // Display books by ISBN
+                    await PrintByISBN(); // Display books by ISBN
+                    break;
+                default:
+                    Console.WriteLine("Invalid option."); // Invalid choice handling
                     break;
             }
         }
@@ -139,7 +145,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to add a new book to the system.
         /// Prompts the user for book details and validates the genre.
         /// </summary>
-        private void AddBook()
+        private async Task AddBook()
         {
             var book = new Book();
             book.Title = uiHelper.ReadStringInput("Please enter the book title:");
@@ -196,12 +202,12 @@ namespace ConsoleApp.Presentation.SubDisplays
             book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
             book.ISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
             var authorId = uiHelper.ReadIntInput("Please enter the author ID:");
-            var author = authorBusiness.Get(authorId);
+            var author = await authorBusiness.GetAsync(authorId);
 
             if (author != null)
             {
                 book.AuthorID = author.Id; // Assign the author to the book
-                bookBusiness.Add(book); // Add the book to the system
+                await bookBusiness.AddAsync(book); // Add the book to the system
                 Console.WriteLine($"Book {book.Title} added successfully.");
             }
             else
@@ -214,10 +220,10 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to update an existing book's details.
         /// Prompts the user for new values and validates them.
         /// </summary>
-        private void UpdateBook()
+        private async Task UpdateBook()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
-            var book = bookBusiness.Get(bookId);
+            var book = await bookBusiness.GetAsync(bookId);
 
             if (book != null)
             {
@@ -243,12 +249,12 @@ namespace ConsoleApp.Presentation.SubDisplays
                 book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
                 book.ISBN = uiHelper.ReadStringInput("Please enter the new book ISBN:");
                 var authorId = uiHelper.ReadIntInput("Please enter the new author ID:");
-                var author = authorBusiness.Get(authorId);
+                var author = await authorBusiness.GetAsync(authorId);
 
                 if (author != null)
                 {
                     book.AuthorID = author.Id; // Assign new author to book
-                    bookBusiness.Update(book); // Update book details in the system
+                    await bookBusiness.AddAsync(book); // Update book details in the system
                     Console.WriteLine($"Book {book.Title} updated successfully.");
                 }
                 else
@@ -266,14 +272,14 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// Allows the user to delete a book from the system.
         /// Prompts the user for the book ID and removes the book if found.
         /// </summary>
-        private void DeleteBook()
+        private async Task DeleteBook()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
-            var book = bookBusiness.Get(bookId);
+            var book = await bookBusiness.GetAsync(bookId);
 
             if (book != null)
             {
-                bookBusiness.Delete(book.Id); // Delete the book from the system
+                await bookBusiness.DeleteAsync(book.Id); // Delete the book from the system
                 Console.WriteLine($"Book {book.Title} deleted successfully.");
             }
             else
@@ -286,9 +292,9 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints all books in the system.
         /// </summary>
-        private void PrintAllBooks()
+        private async Task PrintAllBooks()
         {
-            var books = bookBusiness.GetAllWithIncludes();
+            var books = await bookBusiness.GetAllWithIncludesAsync();
             foreach (var book in books)
             {
                 Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
@@ -298,10 +304,10 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints books filtered by genre.
         /// </summary>
-        private void PrintByGenre()
+        private async Task PrintByGenre()
         {
             var genre = uiHelper.ReadStringInput("Please enter the genre:");
-            var filteredBooks = bookBusiness.GetAllByGenreWithIncludes(genre);
+            var filteredBooks = await bookBusiness.GetAllByGenreWithIncludesAsync(genre);
 
             if (filteredBooks != null && filteredBooks.Count > 0)
             {
@@ -319,10 +325,10 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints a book found by its ID.
         /// </summary>
-        private void PrintById()
+        private async Task PrintById()
         {
             var bookId = uiHelper.ReadIntInput("Please enter the book ID:");
-            var book = bookBusiness.GetWithIncludes(bookId);
+            var book = await bookBusiness.GetWithIncludesAsync(bookId);
 
             if (book != null)
             {
@@ -337,10 +343,10 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Prints a book found by its ISBN.
         /// </summary>
-        private void PrintByISBN()
+        private async Task PrintByISBN()
         {
             var bookISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
-            var book = bookBusiness.GetByISBNWithIncludes(bookISBN);
+            var book = await bookBusiness.GetByISBNWithIncludesAsync(bookISBN);
 
             if (book != null)
             {
@@ -356,16 +362,16 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book by its ID.
         /// </summary>
-        private void BorrowById()
+        private async Task BorrowById()
         {
             var bookId = uiHelper.ReadIntInput("Please select a book by ID:");
-            var book = bookBusiness.GetWithIncludes(bookId);
+            var book = await bookBusiness.GetWithIncludesAsync(bookId);
 
             if (book != null)
             {
                 Console.WriteLine($"You selected: {book.Title}");
                 var memberId = uiHelper.ReadIntInput("Please enter your member ID:");
-                var member = memberBusiness.Get(memberId);
+                var member = await memberBusiness.GetAsync(memberId);
 
                 if (member != null)
                 {
@@ -382,7 +388,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                         BorrowDate = DateTime.Now, // Current date
                         DueDate = DateTime.Now.AddMonths(2) // Assuming a 2-month borrowing period
                     };
-                    borrowedBookBusiness.Add(borrowedBook); // Save the borrowed book
+                    await borrowedBookBusiness.AddAsync(borrowedBook); // Save the borrowed book
                     Console.WriteLine($"You have successfully borrowed {book.Title}.");
                 }
                 else
@@ -399,16 +405,16 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// <summary>
         /// Allows the user to borrow a book by its ISBN.
         /// </summary>
-        private void BorrowByISBN()
+        private async Task BorrowByISBN()
         {
             string bookISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
-            var book = bookBusiness.GetByISBNWithIncludes(bookISBN);
+            var book = await bookBusiness.GetByISBNWithIncludesAsync(bookISBN);
 
             if (book != null)
             {
                 Console.WriteLine($"You selected: {book.Title}");
                 var memberId = uiHelper.ReadIntInput("Please enter your member ID:");
-                var member = memberBusiness.Get(memberId);
+                var member = await memberBusiness.GetAsync(memberId);
 
                 if (member != null)
                 {
@@ -423,7 +429,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                         MemberID = member.Id,
                         BorrowDate = DateTime.Now
                     };
-                    borrowedBookBusiness.Add(borrowedBook); // Add the borrowed book record
+                    await borrowedBookBusiness.AddAsync(borrowedBook); // Add the borrowed book record
                     Console.WriteLine($"You have successfully borrowed {book.Title}.");
                 }
                 else

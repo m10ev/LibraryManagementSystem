@@ -3,123 +3,118 @@ using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Business
+namespace Business 
 {
-    public class BookBusiness
+    public class BookBusiness : IDisposable
     {
-        private LibraryDbContext context;
+        private readonly LibraryDbContext _context;
+        private readonly bool _contextOwned;
 
-        public List<Book> GetAll()
+        // Constructor for ASP.NET Core (DI provides the context)
+        public BookBusiness(LibraryDbContext context)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books.ToList();
-            }
+            _context = context;
+            _contextOwned = false;
         }
 
-        public List<Book> GetAllWithIncludes()
+        // Constructor for Console App (creates its own context)
+        public BookBusiness()
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books
+            _context = new LibraryDbContext();
+            _contextOwned = true;
+        }
+
+        public async Task<List<Book>> GetAllAsync()
+        {
+                return await _context.Books.ToListAsync();
+        }
+
+        public async Task<List<Book>> GetAllWithIncludesAsync()
+        {
+                return await _context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
-                    .ToList();
-            }
+                    .ToListAsync();
         }
 
-        public List<Book> GetAllByGenre(string genre)
+        public async Task<List<Book>> GetAllByGenreAsync(string genre)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books
+                return await _context.Books
                     .Where(b => b.Genre.ToString().ToLower() == genre.ToLower())
-                    .ToList();
-            }
+                    .ToListAsync();
         }
 
-        public List<Book> GetAllByGenreWithIncludes(string genre)
+        public async Task<List<Book>> GetAllByGenreWithIncludesAsync(string genre)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books
+                return await _context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
                     .Where(b => b.Genre.ToString().ToLower() == genre.ToLower())
-                    .ToList();
-            }
+                    .ToListAsync();
         }
 
-        public Book Get(int id)
+        public async Task<Book> GetAsync(int id)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books.Find(id);
-            }
+                return await _context.Books.FindAsync(id);
         }
-        public Book GetWithIncludes(int id)
+        public async Task<Book> GetWithIncludesAsync(int id)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books
+                return await _context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
-                    .FirstOrDefault(b => b.Id == id);
+                    .FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+        public async Task<Book> GetByISBNAsync(string ISBN)
+        {
+            using (_context = new LibraryDbContext())
+            {
+                return await _context.Books.FirstAsync(b => b.ISBN == ISBN);
             }
         }
 
-        public Book GetByISBN(string ISBN)
-        {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books.First(b => b.ISBN == ISBN);
-            }
-        }
-
-        public Book GetByISBNWithIncludes(string ISBN)
-        {
-            using (context = new LibraryDbContext())
-            {
-                return context.Books
+        public async Task<Book> GetByISBNWithIncludesAsync(string ISBN)
+        {        
+                return await _context.Books
                     .Include(b => b.Author)
                     .Include(b => b.BorrowedBooks)
-                    .FirstOrDefault(b => b.ISBN == ISBN);
-            }
+                    .FirstOrDefaultAsync(b => b.ISBN == ISBN);
         }
 
-        public void Add(Book book)
+        public async Task AddAsync(Book book)
         {
-            using (context = new LibraryDbContext())
-            {
-                context.Books.Add(book);
-                context.SaveChanges();
-            }
+                await _context.Books.AddAsync(book);
+                await _context.SaveChangesAsync();
         }
 
-        public void Update(Book book)
+        public async Task UpdateAsync(Book book)
         {
-            using (context = new LibraryDbContext())
-            {
-                var item = context.Books.Find(book.Id);
+                var item = await _context.Books.FindAsync(book.Id);
                 if (item != null)
                 {
-                    context.Entry(item).CurrentValues.SetValues(book);
-                    context.SaveChanges();
+                    _context.Entry(item).CurrentValues.SetValues(book);
+                    await _context.SaveChangesAsync();
                 }
-            }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            using (context = new LibraryDbContext())
-            {
-                var book = context.Books.Find(id);
+                var book = await _context.Books.FindAsync(id);
                 if (book != null)
                 {
-                    context.Books.Remove(book);
-                    context.SaveChanges();
+                    _context.Books.Remove(book);
+                    await _context.SaveChangesAsync();
                 }
+        }
+
+        // Make sure you clean up if we created the context ourselves
+        public void Dispose()
+        {
+            if (_contextOwned)
+            {
+                _context.Dispose();
             }
         }
     }
