@@ -10,9 +10,6 @@ namespace ConsoleApp.Presentation.SubDisplays
     internal class BorrowedBookDisplay
     {
         // Business layer objects to interact with data models
-        private readonly AuthorBusiness authorBusiness = new AuthorBusiness();
-        private readonly BookBusiness bookBusiness = new BookBusiness();
-        private readonly MemberBusiness memberBusiness = new MemberBusiness();
         private readonly BorrowedBookBusiness borrowedBookBusiness = new BorrowedBookBusiness();
 
         // UI helper to assist with common input/output operations
