@@ -3,80 +3,122 @@ using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business
 {
-    public class BorrowedBookBusiness
+    public class BorrowedBookBusiness : IDisposable
     {
-        private LibraryDbContext context;
+        private readonly LibraryDbContext _context;
+        private readonly bool _contextOwned;
 
-        public List<BorrowedBook> GetAll()
+        // Constructor for ASP.NET Core (DI provides the _context)
+        public BorrowedBookBusiness(LibraryDbContext context)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.BorrowedBooks
+            _context = context;
+            _contextOwned = false;
+        }
+
+        // Constructor for Console App (creates its own _context)
+        public BorrowedBookBusiness()
+        {
+            _context = new LibraryDbContext();
+            _contextOwned = true;
+        }
+
+        public async Task<List<BorrowedBook>> GetAllAsync()
+        {
+                return await _context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
-                    .ToList();
-            }
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .ToListAsync();
         }
 
-        public BorrowedBook GetByBookId(int bookId)
+        public async Task<BorrowedBook> GetByBookIdAsync(int bookId)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.BorrowedBooks
+                return await _context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
-                    .First(bb => bb.BookID == bookId);
-            }
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefaultAsync(bb => bb.BookID == bookId);
         }
 
-        public BorrowedBook GetByMemberId(int memberId)
+        public async Task<List<BorrowedBook>> GetAllBetweenDatesAsync(DateTime startDate, DateTime endDate)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.BorrowedBooks
+            return await _context.BorrowedBooks
+                .Where(bb => bb.BorrowDate >= startDate && bb.BorrowDate <= endDate)
+                .ToListAsync();
+        }
+
+        public async Task<BorrowedBook> GetByMemberIdAsync(int memberId)
+        {
+                return await _context.BorrowedBooks
                     .Include(bb => bb.Book)
                     .Include(bb => bb.Member)
-                    .First(bb => bb.MemberID == memberId);
-            }
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefaultAsync(bb => bb.MemberID == memberId);
         }
 
-        public void Add(BorrowedBook borrowedBook)
+        public async Task<BorrowedBook> GetByBookIdAndDateAsync(int bookId, DateTime date)
         {
-            using (context = new LibraryDbContext())
-            {
-                context.BorrowedBooks.Add(borrowedBook);
-                context.SaveChanges();
-            }
+                return await _context.BorrowedBooks
+                    .Include(bb => bb.Book)
+                    .Include(bb => bb.Member)
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefaultAsync(bb => bb.BookID == bookId && bb.BorrowDate == date);
         }
 
-        public void Update(BorrowedBook borrowedBook)
+        public async Task AddAsync(BorrowedBook borrowedBook)
         {
-            using (context = new LibraryDbContext())
-            {
-                var item = context.BorrowedBooks
-                    .FirstOrDefault(bb => bb.BookID == borrowedBook.BookID && bb.MemberID == borrowedBook.MemberID);
+                await _context.BorrowedBooks.AddAsync(borrowedBook);
+                await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(BorrowedBook borrowedBook)
+        {
+                var item = await _context.BorrowedBooks
+                    .FirstOrDefaultAsync(bb => bb.BookID == borrowedBook.BookID && bb.MemberID == borrowedBook.MemberID);
                 if (item != null)
                 {
-                    context.Entry(item).CurrentValues.SetValues(borrowedBook);
-                    context.SaveChanges();
+                    _context.Entry(item).CurrentValues.SetValues(borrowedBook);
+                    await _context.SaveChangesAsync();
                 }
-            }
         }
 
-        public void Delete(int bookId, int memberId)
+        public async Task DeleteAsync(int bookId)
         {
-            using (context = new LibraryDbContext())
-            {
-                var borrowedBook = context.BorrowedBooks
-                    .FirstOrDefault(bb => bb.BookID == bookId && bb.MemberID == memberId);
+                var borrowedBook = await _context.BorrowedBooks
+                    .OrderBy(bb => bb.BorrowDate)
+                    .Reverse()
+                    .FirstOrDefaultAsync(bb => bb.BookID == bookId);
                 if (borrowedBook != null)
                 {
-                    context.BorrowedBooks.Remove(borrowedBook);
-                    context.SaveChanges();
+                    _context.BorrowedBooks.Remove(borrowedBook);
+                    await _context.SaveChangesAsync();
                 }
+        }
+        public async Task DeleteByIdAndDateAsync(int bookId, DateTime borrowDate)
+        {
+                var borrowedBook = await _context.BorrowedBooks
+                    .FirstOrDefaultAsync(bb => bb.BookID == bookId && bb.BorrowDate == borrowDate);
+                if (borrowedBook != null)
+                {
+                    _context.BorrowedBooks.Remove(borrowedBook);
+                    await _context.SaveChangesAsync();
+                }
+        }
+
+        // Make sure you clean up if we created the _context ourselves
+        public void Dispose()
+        {
+            if (_contextOwned)
+            {
+                _context.Dispose();
             }
         }
     }

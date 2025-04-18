@@ -1,3 +1,2 @@
 ﻿using ConsoleApp.Presentation;
-
-Display display = new Display();
+    await Display.OnStart();

@@ -3,61 +3,80 @@ using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Business
 {
-    public class AuthorBusiness
+    public class AuthorBusiness : IDisposable
     {
-        private LibraryDbContext context;
+        private readonly LibraryDbContext _context;
+        private readonly bool _contextOwned;
 
-        public List<Author> GetAll()
+        // Constructor for ASP.NET Core (DI provides the context)
+        public AuthorBusiness(LibraryDbContext context)
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Authors.ToList();
-            }
+            _context = context;
+            _contextOwned = false;
         }
 
-        public Author Get(int id)
+        // Constructor for Console App (creates its own context)
+        public AuthorBusiness()
         {
-            using (context = new LibraryDbContext())
-            {
-                return context.Authors.Find(id);
-            }
+            _context = new LibraryDbContext();
+            _contextOwned = true;
         }
 
-        public void Add(Author author)
+        public async Task<List<Author>> GetAllAsync()
         {
-            using (context = new LibraryDbContext())
-            {
-                context.Authors.Add(author);
-                context.SaveChanges();
-            }
+               return await _context.Authors.ToListAsync();
         }
 
-        public void Update(Author author)
+
+        public async Task<Author> GetAsync(int id)
         {
-            using (context = new LibraryDbContext())
-            {
-                var item = context.Authors.Find(author.Id);
+                return await _context.Authors.FindAsync(id);
+        }
+
+        public async Task<Author> GetWithIncludesAsync(int id)
+        {
+                return await _context.Authors
+                    .Include(a => a.Books)
+                    .ThenInclude(b => b.BorrowedBooks)
+                    .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task AddAsync(Author author)
+        {
+                await _context.Authors.AddAsync(author);
+                await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Author author)
+        {
+                var item = await _context.Authors.FindAsync(author.Id);
                 if (item != null)
                 {
-                    context.Entry(item).CurrentValues.SetValues(author);
-                    context.SaveChanges();
+                    _context.Entry(item).CurrentValues.SetValues(author);
+                    await _context.SaveChangesAsync();
                 }
-            }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            using (context = new LibraryDbContext())
-            {
-                var author = context.Authors.Find(id);
+                var author = await _context.Authors.FindAsync(id);
                 if (author != null)
                 {
-                    context.Authors.Remove(author);
-                    context.SaveChanges();
+                    _context.Authors.Remove(author);
+                    await _context.SaveChangesAsync();
                 }
+        }
+
+        // Make sure you clean up if we created the _context ourselves
+        public void Dispose()
+        {
+            if (_contextOwned)
+            {
+                _context.Dispose();
             }
         }
     }

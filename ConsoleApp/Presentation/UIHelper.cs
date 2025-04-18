@@ -62,5 +62,39 @@ namespace ConsoleApp.Presentation
                 return input;
             }
         }
+
+        /// <summary>
+        /// Reads and returns a valid DateTime input from the user in yyyy-MM-dd format.
+        /// Keeps prompting until a properly formatted and valid date is entered.
+        /// </summary>
+        /// <param name="prompt">The message to display to the user.</param>
+        /// <returns>A DateTime value representing the user's input.</returns>
+        public DateTime ReadDateInput(string prompt)
+        {
+            DateTime dateInput;
+            while (true)
+            {
+                Console.WriteLine($"{prompt} (yyyy-MM-dd)");
+                string input = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(input))
+                {
+                    Console.WriteLine("Input cannot be empty. Please enter a valid date.");
+                    continue;
+                }
+
+                if (DateTime.TryParseExact(input, "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None, out dateInput))
+                {
+                    return dateInput;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                }
+            }
+        }
+
     }
 }

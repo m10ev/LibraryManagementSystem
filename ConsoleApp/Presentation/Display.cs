@@ -1,28 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ConsoleApp.Presentation.SubDisplays;
 
-using Business;
-using ConsoleApp.Presentation.SubDisplays;
-using Data.Models;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ConsoleApp.Presentation
 {
     internal class Display
     {
-        private BookDisplay bookDisplay = new BookDisplay();
-        private MemberDisplay memberDisplay = new MemberDisplay();
+        // Creating instances of sub-displays for each domain (Book, Member, Author, Borrowed Book)
+        private readonly AuthorDisplay authorDisplay = new AuthorDisplay();
+        private readonly BookDisplay bookDisplay = new BookDisplay();
+        private readonly BorrowedBookDisplay borrowedBookDisplay = new BorrowedBookDisplay();
+        private readonly MemberDisplay memberDisplay = new MemberDisplay();
 
-        private UIHelper uiHelper = new UIHelper();
+        // UI helper to assist with common input/output operations
+        private readonly UIHelper uiHelper = new UIHelper();
 
-        public Display()
+        /// <summary>
+        /// The entry point for starting the display interaction.
+        /// </summary>
+        public static async Task OnStart()
         {
-            Input();
+            var display = new Display();
+            await display.Input();
         }
 
+        // Private constructor to prevent instantiation outside the class
+        private Display()
+        {
+        }
+
+        /// <summary>
+        /// Displays the main menu options for the library management system.
+        /// </summary>
         public void ShowMenu()
         {
             uiHelper.ShowHeader("Library Management System");
@@ -33,33 +41,40 @@ namespace ConsoleApp.Presentation
             Console.WriteLine("5. Exit");
         }
 
-        private void Input()
+        /// <summary>
+        /// Handles the user input and navigates to the appropriate display based on selection.
+        /// </summary>
+        private async Task Input()
         {
             var operation = -1;
             do
             {
-                ShowMenu();
-                operation = uiHelper.ReadIntInput("Please select an option:");
+                ShowMenu(); // Show the menu options
+                operation = uiHelper.ReadIntInput("Please select an option:"); // Read user input
+
+                // Switch case for different menu options
                 switch (operation)
                 {
                     case 1:
-                        bookDisplay.BookManager();
+                        await bookDisplay.BookManager(); // Navigate to book manager
                         break;
                     case 2:
-                        memberDisplay.MemberManager();
+                        await memberDisplay.MemberManager(); // Navigate to member manager
                         break;
-                    /*case 3:
-                        AuthorManager();
+                    case 3:
+                        await authorDisplay.AuthorManager(); // Navigate to author manager
                         break;
                     case 4:
-                        BorrowedBookManager();
-                        break;*/
+                        await borrowedBookDisplay.BorrowedBookManager(); // Navigate to borrowed book manager
+                        break;
+                    case 5:
+                        Console.WriteLine("Exiting..."); // Inform the user that the program is exiting
+                        break;
                     default:
-                        Console.WriteLine("Please select a valid option.");
+                        Console.WriteLine("Invalid option selected, please try again."); // Handle invalid options
                         break;
                 }
-            } while (operation != 5);
-            Environment.Exit(0);
+            } while (operation != 5); // Continue the loop until the user chooses to exit
         }
     }
 }
