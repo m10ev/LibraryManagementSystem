@@ -88,7 +88,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             var author = new Author();
             author.FirstName = uiHelper.ReadStringInput("Enter first name:"); // Prompt for first name
             author.LastName = uiHelper.ReadStringInput("Enter last name:"); // Prompt for last name
-            author.DateOfBirth = DateTime.Parse(uiHelper.ReadStringInput("Enter date of birth (yyyy-mm-dd):")); // Prompt for date of birth
+            author.DateOfBirth = uiHelper.ReadDateInput("Enter date of birth:"); // Prompt for date of birth
             author.ImageUrl = uiHelper.ReadStringInput($"Enter image URL:"); // Prompt for image URL
             author.Biography = uiHelper.ReadStringInput("Enter biography:"); // Prompt for biography
             await authorBusiness.AddAsync(author); // Add author to the system
@@ -110,7 +110,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             // Prompt for new details
             author.FirstName = uiHelper.ReadStringInput($"Enter new first name:");
             author.LastName = uiHelper.ReadStringInput($"Enter new last name:");
-            author.DateOfBirth = DateTime.Parse(uiHelper.ReadStringInput($"Enter new date of birth:"));
+            author.DateOfBirth = uiHelper.ReadDateInput($"Enter new date of birth:");
             author.ImageUrl = uiHelper.ReadStringInput($"Enter new image URL:");
             author.Biography = uiHelper.ReadStringInput($"Enter new biography:");
             await authorBusiness.UpdateAsync(author); // Save updated author details
@@ -131,17 +131,17 @@ namespace ConsoleApp.Presentation.SubDisplays
                 return;
             }
             // Display author details along with their books
-            Console.WriteLine($"ID: {author.Id}\nName: {author.FirstName} {author.LastName}\nDate of birth:{author.DateOfBirth.ToShortDateString()}\nBio:\n{author.Biography}\nBooks:");
+            Console.WriteLine($"ID: {author.Id}\nName: {author.FirstName} {author.LastName}\nDate of birth:{author.DateOfBirth:yyyy-MM-dd}\nBio:\n{author.Biography}\nBooks:");
             foreach (var book in author.Books)
             {
                 // Display book details, indicating if it's rented out or available
                 if (book.BorrowedBooks.Any(bb => bb.ReturnDate == null))
                 {
-                    Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Published Year: {book.PublicationDate.ToShortDateString}, Status: Rented out");
+                    Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Published Year: {book.PublicationDate:yyyy-MM-dd}, Status: Rented out");
                 }
                 else
                 {
-                    Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Published Year: {book.PublicationDate.ToShortDateString}, Status: Available");
+                    Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Published Year: {book.PublicationDate:yyyy-MM-dd}, Status: Available");
                 }
             }
         }

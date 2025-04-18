@@ -10,14 +10,28 @@ namespace Data
 {
     public class LibraryDbContext : DbContext
     {
-        public DbSet<Author> Authors { get; set; }
+        public virtual DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<BorrowedBook> BorrowedBooks { get; set; }
 
+        // Constructor that accepts DbContextOptions
+        public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
+        {
+        }
+
+        public LibraryDbContext()
+        {
+        }
+
+        // Default constructor for configuring directly (in case not using DI)
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=LibraryDb;Integrated Security=True;TrustServerCertificate=True;");
+            // Check if options were already configured
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=LibraryDb;Integrated Security=True;TrustServerCertificate=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

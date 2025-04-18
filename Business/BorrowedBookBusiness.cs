@@ -82,7 +82,7 @@ namespace Business
         public async Task UpdateAsync(BorrowedBook borrowedBook)
         {
                 var item = await _context.BorrowedBooks
-                    .FirstOrDefaultAsync(bb => bb.BookID == borrowedBook.BookID);
+                    .FirstOrDefaultAsync(bb => bb.BookID == borrowedBook.BookID && bb.MemberID == borrowedBook.MemberID);
                 if (item != null)
                 {
                     _context.Entry(item).CurrentValues.SetValues(borrowedBook);

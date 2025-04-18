@@ -199,7 +199,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             }
 
             // Input and assign other book details
-            book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
+            book.PublicationDate = uiHelper.ReadDateInput("Please enter the book published year:");
             book.ISBN = uiHelper.ReadStringInput("Please enter the book ISBN:");
             var authorId = uiHelper.ReadIntInput("Please enter the author ID:");
             var author = await authorBusiness.GetAsync(authorId);
@@ -246,7 +246,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                 }
 
                 // Input new ISBN and author details
-                book.PublicationDate = DateTime.Parse(uiHelper.ReadStringInput("Please enter the book published year (yyyy-mm-dd):"));
+                book.PublicationDate = uiHelper.ReadDateInput("Please enter the book published year:");
                 book.ISBN = uiHelper.ReadStringInput("Please enter the new book ISBN:");
                 var authorId = uiHelper.ReadIntInput("Please enter the new author ID:");
                 var author = await authorBusiness.GetAsync(authorId);
@@ -297,7 +297,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             var books = await bookBusiness.GetAllWithIncludesAsync();
             foreach (var book in books)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate:yyyy-MM-dd}, ISBN: {book.ISBN}");
             }
         }
 
@@ -313,7 +313,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             {
                 foreach (var book in filteredBooks)
                 {
-                    Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
+                    Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate:yyyy-MM-dd}, ISBN: {book.ISBN}");
                 }
             }
             else
@@ -332,7 +332,7 @@ namespace ConsoleApp.Presentation.SubDisplays
 
             if (book != null)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate:yyyy-MM-dd}, ISBN: {book.ISBN}");
             }
             else
             {
@@ -350,7 +350,7 @@ namespace ConsoleApp.Presentation.SubDisplays
 
             if (book != null)
             {
-                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate.ToShortDateString()}, ISBN: {book.ISBN}");
+                Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Genre: {book.Genre}, Author: {book.Author.FirstName} {book.Author.LastName}, Release Date: {book.PublicationDate:yyyy-MM-dd}, ISBN: {book.ISBN}");
             }
             else
             {
@@ -385,8 +385,8 @@ namespace ConsoleApp.Presentation.SubDisplays
                     {
                         BookID = book.Id,
                         MemberID = member.Id,
-                        BorrowDate = DateTime.Now, // Current date
-                        DueDate = DateTime.Now.AddMonths(2) // Assuming a 2-month borrowing period
+                        BorrowDate = DateTime.Now.Date, // Current date
+                        DueDate = DateTime.Now.AddMonths(2).Date // Assuming a 2-month borrowing period
                     };
                     await borrowedBookBusiness.AddAsync(borrowedBook); // Save the borrowed book
                     Console.WriteLine($"You have successfully borrowed {book.Title}.");
@@ -427,7 +427,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                     {
                         BookID = book.Id,
                         MemberID = member.Id,
-                        BorrowDate = DateTime.Now
+                        BorrowDate = DateTime.Now.Date
                     };
                     await borrowedBookBusiness.AddAsync(borrowedBook); // Add the borrowed book record
                     Console.WriteLine($"You have successfully borrowed {book.Title}.");

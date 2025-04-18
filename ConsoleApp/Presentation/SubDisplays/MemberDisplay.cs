@@ -78,7 +78,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             foreach (var member in members)
             {
                 // Display member details
-                Console.WriteLine($"ID: {member.Id}, Name: {member.FirstName} {member.LastName}, Membership Expire Date: {member.MembershipExpireDate.ToShortDateString()} Phone Number: {member.PhoneNumber}");
+                Console.WriteLine($"ID: {member.Id}, Name: {member.FirstName} {member.LastName}, Membership Expire Date: {member.MembershipExpireDate:yyyy-MM-dd} Phone Number: {member.PhoneNumber}");
             }
         }
 
@@ -91,7 +91,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             member.FirstName = uiHelper.ReadStringInput("Enter first name:");
             member.LastName = uiHelper.ReadStringInput("Enter last name:");
             member.PhoneNumber = uiHelper.ReadStringInput("Enter phone number:");
-            member.MembershipExpireDate = DateTime.Now.AddYears(1); // Set membership expiry to 1 year from now
+            member.MembershipExpireDate = DateTime.Now.AddYears(1).Date; // Set membership expiry to 1 year from now
             await memberBusiness.AddAsync(member); // Add member to the system
             Console.WriteLine("Member added successfully.");
         }
@@ -105,7 +105,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             var member = await memberBusiness.GetAsync(memberId); // Fetch member by ID
             if (member != null)
             {
-                member.MembershipExpireDate = DateTime.Now.AddYears(1); // Renew membership for another year
+                member.MembershipExpireDate = DateTime.Now.AddYears(1).Date; // Renew membership for another year
                 await memberBusiness.UpdateAsync(member); // Update the member in the system
                 Console.WriteLine("Membership renewed successfully.");
             }
@@ -128,8 +128,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                 member.FirstName = uiHelper.ReadStringInput("Enter new first name:");
                 member.LastName = uiHelper.ReadStringInput("Enter new last name:");
                 member.PhoneNumber = uiHelper.ReadStringInput("Enter new phone number:");
-                DateTime date;
-                DateTime.TryParse(uiHelper.ReadStringInput("Enter new membership expire date (yyyy-mm-dd):"), out date);
+                DateTime date = uiHelper.ReadDateInput("Enter new membership expire date:");
                 member.MembershipExpireDate = date; // Update membership expiry date
                 await memberBusiness.UpdateAsync(member); // Save updated member details
                 Console.WriteLine("Member updated successfully.");
@@ -150,17 +149,17 @@ namespace ConsoleApp.Presentation.SubDisplays
             if (member != null)
             {
                 // Display member details
-                Console.WriteLine($"ID: {member.Id}, Name: {member.FirstName} {member.LastName}, Membership Expire Date: {member.MembershipExpireDate} Phone Number: {member.PhoneNumber}\nBorrowed Books:");
+                Console.WriteLine($"ID: {member.Id}, Name: {member.FirstName} {member.LastName}, Membership Expire Date: {member.MembershipExpireDate:yyyy-MM-dd} Phone Number: {member.PhoneNumber}\nBorrowed Books:");
                 foreach (var borrowedBook in member.BorrowedBooks.OrderBy(bb => bb.BorrowDate).Reverse())
                 {
                     Book book = await bookBusiness.GetAsync(borrowedBook.BookID);
                     if (borrowedBook.ReturnDate != null)
                     {
-                        Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Borrowed on: {borrowedBook.BorrowDate.ToShortDateString()} Return Date: {borrowedBook.DueDate.ToShortDateString()}");
+                        Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Borrowed on: {borrowedBook.BorrowDate:yyyy-MM-dd} Return Date: {borrowedBook.DueDate:yyyy-MM-dd}");
                     }
                     else
                     {
-                        Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Borrowed on: {borrowedBook.BorrowDate.ToShortDateString()} Due Date: {borrowedBook.DueDate.ToShortDateString()}");
+                        Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Borrowed on: {borrowedBook.BorrowDate:yyyy-MM-dd} Due Date: {borrowedBook.DueDate:yyyy-MM-dd}");
                     }
                 }
             }

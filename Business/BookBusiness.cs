@@ -69,10 +69,7 @@ namespace Business
 
         public async Task<Book> GetByISBNAsync(string ISBN)
         {
-            using (_context = new LibraryDbContext())
-            {
                 return await _context.Books.FirstAsync(b => b.ISBN == ISBN);
-            }
         }
 
         public async Task<Book> GetByISBNWithIncludesAsync(string ISBN)

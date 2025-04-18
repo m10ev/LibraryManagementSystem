@@ -91,11 +91,11 @@ namespace ConsoleApp.Presentation.SubDisplays
             {
                 if (borrowedBook.ReturnDate == null)
                 {
-                    Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Due Date: {borrowedBook.ReturnDate}");
+                    Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Due Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
                 }
                 else
                 {
-                    Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Return Date: {borrowedBook.ReturnDate}");
+                    Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Return Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace ConsoleApp.Presentation.SubDisplays
             // Display each currently borrowed book's details
             foreach (var borrowedBook in borrowedBooks)
             {
-                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Due Date: {borrowedBook.ReturnDate}");
+                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Due Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
             }
         }
 
@@ -125,13 +125,14 @@ namespace ConsoleApp.Presentation.SubDisplays
         private async Task UpdateBorrowedBook()
         {
             var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to update:"); // Prompt for borrowed book ID
-            var borrowedBook = await borrowedBookBusiness.GetByBookIdAsync(borrowedBookId); // Fetch borrowed book by ID
+            var borrowedBookDate = uiHelper.ReadDateInput("Enter the Borrow date:"); // Prompt for borrow date
+            var borrowedBook = await borrowedBookBusiness.GetByBookIdAndDateAsync(borrowedBookId, borrowedBookDate); // Fetch borrowed book by ID
             if (borrowedBook == null)
             {
                 Console.WriteLine("Borrowed book not found."); // Handle case where borrowed book doesn't exist
                 return;
             }
-            var newDueDate = DateTime.Parse(uiHelper.ReadStringInput("Enter new Due date (yyyy-mm-dd):")); // Prompt for new due date
+            var newDueDate = uiHelper.ReadDateInput("Enter new Due date:"); // Prompt for new due date
             borrowedBook.DueDate = newDueDate; // Update the due date
             await borrowedBookBusiness.UpdateAsync(borrowedBook); // Save the updated borrowed book details
             Console.WriteLine("Borrowed book updated successfully.");
@@ -143,7 +144,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         private async Task FetchBorrowedBookByIdAndDate()
         {
             var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to fetch:"); // Prompt for borrowed book ID
-            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):")); // Prompt for borrow date
+            var borrowedBookDate = uiHelper.ReadDateInput("Enter the Borrow date:"); // Prompt for borrow date
             var borrowedBook = await borrowedBookBusiness.GetByBookIdAndDateAsync(borrowedBookId, borrowedBookDate); // Fetch borrowed book by ID and date
             if (borrowedBook == null)
             {
@@ -153,11 +154,11 @@ namespace ConsoleApp.Presentation.SubDisplays
             // Display borrowed book details based on return date status
             if (borrowedBook.ReturnDate == null)
             {
-                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Due Date: {borrowedBook.DueDate}");
+                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Due Date: {borrowedBook.DueDate:yyyy-MM-dd}");
             }
             else
             {
-                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate}, Return Date: {borrowedBook.ReturnDate}");
+                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Return Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
             }
         }
 
@@ -207,7 +208,7 @@ namespace ConsoleApp.Presentation.SubDisplays
         private async Task DeleteBorrowedBookByIdAndDate()
         {
             var borrowedBookId = uiHelper.ReadIntInput("Enter the ID of the borrowed book to delete:"); // Prompt for borrowed book ID
-            var borrowedBookDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the Borrow date (yyyy-mm-dd):")); // Prompt for borrow date
+            var borrowedBookDate = uiHelper.ReadDateInput("Enter the Borrow date:"); // Prompt for borrow date
             var borrowedBook = await borrowedBookBusiness.GetByBookIdAndDateAsync(borrowedBookId, borrowedBookDate); // Fetch borrowed book by ID and date
             if (borrowedBook == null)
             {
@@ -223,8 +224,8 @@ namespace ConsoleApp.Presentation.SubDisplays
         /// </summary>
         private async Task DeleteBetweenDates()
         {
-            var startDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the start date (yyyy-mm-dd):")); // Prompt for start date
-            var endDate = DateTime.Parse(uiHelper.ReadStringInput("Enter the end date (yyyy-mm-dd):")); // Prompt for end date
+            var startDate = uiHelper.ReadDateInput("Enter the start date:"); // Prompt for start date
+            var endDate = uiHelper.ReadDateInput("Enter the end date:"); // Prompt for end date
             var borrowedBooks = await borrowedBookBusiness.GetAllBetweenDatesAsync(startDate, endDate); // Fetch borrowed books between the given dates
             if (borrowedBooks.Count == 0)
             {
