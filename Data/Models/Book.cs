@@ -17,10 +17,11 @@ namespace Data.Models
         [MaxLength(55)]
         public string Title { get; set; }
         [Required]
-        [StringLength(13, MinimumLength = 10, ErrorMessage = "ISBN must be between 10 and 13 characters.")]
         public Genre Genre { get; set; }
+        [StringLength(13, MinimumLength = 10, ErrorMessage = "ISBN must be between 10 and 13 characters.")]
         public string ISBN { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime PublicationDate { get; set; }
         [Required]
         public int AuthorID { get; set; }
@@ -28,6 +29,6 @@ namespace Data.Models
         [ForeignKey("AuthorID")]
         public Author? Author { get; set; }
 
-        public ICollection<BorrowedBook> BorrowedBooks { get; set; }
+        public ICollection<BorrowedBook>? BorrowedBooks { get; set; }
     }
 }

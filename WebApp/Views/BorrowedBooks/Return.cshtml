@@ -1,0 +1,35 @@
+﻿@model Data.Models.BorrowedBook
+
+@{
+    ViewData["Title"] = "Return Book";
+}
+
+<h1 class="text-center">Return Book</h1>
+
+<div class="book-details">
+    <div class="row align-items-start">
+        <div class="col-md-8">
+            <h2 class="fw-bold">@Model.Book.Title</h2>
+            <p class="text-muted mb-2"><strong>Genre:</strong> @Model.Book.Genre</p>
+            <p class="text-muted mb-2"><strong>ISBN:</strong> @Model.Book.ISBN</p>
+            <p class="text-muted mb-2"><strong>Borrowed On:</strong> @Model.BorrowDate.ToString("dd-MM-yyyy")</p>
+            <p class="text-muted mb-2"><strong>Due Date:</strong> @Model.DueDate.ToString("dd-MM-yyyy")</p>
+
+            <p class="text-muted mb-2">
+                <strong>Member:</strong>
+                <a asp-controller="Members" asp-action="Details" asp-route-id="@Model.MemberID" class="text-decoration-none">
+                    @Model.Member?.FirstName @Model.Member?.LastName
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <h4>Are you sure you want to mark this book as returned?</h4>
+
+    <!-- Form for submitting the return action -->
+    <form asp-action="ReturnConfiremd" asp-route-bookId="@Model.BookID" asp-route-date="@Model.BorrowDate.ToString("yyyy-MM-dd")" method="post" id="returnForm">
+        <button type="submit" class="btn btn-primary">Marked as returned</button>
+    </form>
+</div>

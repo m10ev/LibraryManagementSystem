@@ -1,0 +1,58 @@
+﻿@model Data.Models.Book
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="text-center my-4">Book Details</h1>
+
+<div class="container">
+    <div class="row align-items-start">
+        <div class="col-md-8">
+            <h2 class="fw-bold">@Model.Title</h2>
+            <p class="text-muted mb-2"><strong>Genre:</strong> @Model.Genre</p>
+            <p class="text-muted mb-2"><strong>ISBN:</strong> @Model.ISBN</p>
+            <p class="text-muted mb-2"><strong>Publication Date:</strong> @Model.PublicationDate.ToString("dd-MM-yyyy")</p>
+            <p class="text-muted mb-2">
+                <strong>Author:</strong>
+                <a asp-controller="Authors" asp-action="Details" asp-route-id="@Model.AuthorID" class="text-decoration-none">
+                    @Model.Author?.FirstName @Model.Author?.LastName
+                </a>
+            </p>
+
+            <p class="text-muted mb-2">
+                <strong>Status:</strong>
+                @(Model.BorrowedBooks != null && Model.BorrowedBooks.Any(b => b.ReturnDate == null)
+                    ? "Borrowed"
+                    : "Not Borrowed")
+            </p>
+
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger me-2">Delete</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.BorrowedBooks != null && Model.BorrowedBooks.Any())
+    {
+        <hr />
+        <h4>Borrow History</h4>
+        <ul class="list-group mt-3">
+            @foreach (var borrow in Model.BorrowedBooks)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Borrowed On:</strong> @borrow.BorrowDate.ToString("dd-MM-yyyy")<br />
+                        <strong>Returned:</strong> @(borrow.ReturnDate?.ToString("dd-MM-yyyy") ?? "Not Returned")
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="mt-4 text-muted"><em>No borrow records found for this book.</em></p>
+    }
+</div>

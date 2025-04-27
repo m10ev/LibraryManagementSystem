@@ -18,6 +18,7 @@ namespace Data.Models
         [MaxLength(20)]
         public string LastName { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateOfBirth { get; set; }
         [Required]
         [MaxLength(200)]
@@ -25,6 +26,6 @@ namespace Data.Models
 
         public string? ImageUrl { get; set; }
 
-        public ICollection<Book> Books { get; set; }
+        public ICollection<Book>? Books { get; set; }
     }
 }

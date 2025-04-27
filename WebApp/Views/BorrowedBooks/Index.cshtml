@@ -1,0 +1,141 @@
+﻿@model IEnumerable<Data.Models.BorrowedBook>
+
+@{
+    ViewData["Title"] = "Borrowed Books Index";
+}
+
+<h1 class="text-center my-4">Borrowed Books</h1>
+
+<style>
+    .book-row {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .book-item {
+        width: 100%;
+        background-color: #fff;
+        border-radius: 5px;
+        border-left: 4px solid #007bff;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        padding: 1rem;
+        margin-bottom: 10px;
+    }
+
+        .book-item .book-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+    .book-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 5px;
+    }
+
+    .book-item a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container">
+    <div class="filter-container align-items-end">
+        <!-- Search Input -->
+        <div style="flex: 3;">
+            <label for="borrowSearch">Search by Title or Member</label>
+            <input id="borrowSearch" type="text" class="form-control" placeholder="Search..." />
+        </div>
+
+        <!-- Start Date -->
+        <div style="flex: 1; min-width: 150px;">
+            <label for="dateStart">Start Date</label>
+            <input id="dateStart" type="date" class="form-control" />
+        </div>
+
+        <!-- End Date -->
+        <div style="flex: 1; min-width: 150px;">
+            <label for="dateEnd">End Date</label>
+            <input id="dateEnd" type="date" class="form-control" />
+        </div>
+    </div>
+
+    <div class="book-row">
+        @foreach (var borrowed in Model)
+        {
+            <div class="book-item"
+                 data-title="@borrowed.Book?.Title"
+                 data-member="@($"{borrowed.Member?.FirstName} {borrowed.Member?.LastName}")"
+                 data-borrowdate="@borrowed.BorrowDate.ToString("yyyy-MM-dd")">
+                <!-- Fix for passing both bookId and borrowDate as separate route parameters -->
+                <a asp-action="Details" asp-route-bookId="@borrowed.BookID" asp-route-date="@borrowed.BorrowDate.ToString("yyyy-MM-dd")" class="text-dark">
+                    <div class="book-title">
+                        @borrowed.Book?.Title
+                        <span class="text-muted" style="font-size: 0.9rem;">@borrowed.BorrowDate.ToString("yyyy-MM-dd")</span>
+                    </div>
+
+                    <div class="book-info">
+                        <div><strong>Member:</strong> @borrowed.Member?.FirstName @borrowed.Member?.LastName</div>
+                        <div><strong>Returned:</strong> @(borrowed.ReturnDate?.ToString("yyyy-MM-dd") ?? "Not Returned")</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('borrowSearch');
+            const dateStartInput = document.getElementById('dateStart');
+            const dateEndInput = document.getElementById('dateEnd');
+            const items = document.querySelectorAll('.book-item');
+
+            function filterItems() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const startDate = dateStartInput.value;
+                const endDate = dateEndInput.value;
+
+                items.forEach(item => {
+                    const title = item.getAttribute('data-title')?.toLowerCase() || '';
+                    const member = item.getAttribute('data-member')?.toLowerCase() || '';
+                    const borrowDate = item.getAttribute('data-borrowdate');
+
+                    let matchesSearch = title.includes(searchTerm) || member.includes(searchTerm);
+                    let matchesDate = true;
+
+                    if (startDate && borrowDate < startDate) {
+                        matchesDate = false;
+                    }
+
+                    if (endDate && borrowDate > endDate) {
+                        matchesDate = false;
+                    }
+
+                    item.style.display = (matchesSearch && matchesDate) ? '' : 'none';
+                });
+            }
+
+            searchInput.addEventListener('input', filterItems);
+            dateStartInput.addEventListener('change', filterItems);
+            dateEndInput.addEventListener('change', filterItems);
+        });
+    </script>
+}

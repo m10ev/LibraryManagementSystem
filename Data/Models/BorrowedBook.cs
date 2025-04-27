@@ -15,9 +15,12 @@ namespace Data.Models
         [Key, Column(Order = 1)]
         public int MemberID { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime BorrowDate { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? ReturnDate { get; set; }
 
         [ForeignKey("BookID")]

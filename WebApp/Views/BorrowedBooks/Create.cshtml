@@ -1,0 +1,58 @@
+﻿@model Data.Models.BorrowedBook
+
+@{
+    ViewData["Title"] = "Create Borrowed Book";
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+    var twoWeeksLater = DateTime.Today.AddDays(14).ToString("yyyy-MM-dd");
+}
+
+<h1 class="text-center mb-4">Create Borrowed Book</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow p-4 rounded-4" style="max-width: 650px; width: 100%;">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="BookID" class="form-label fw-bold">Book</label>
+                    <select asp-for="BookID" class="form-control" asp-items="ViewBag.BookID">
+                        <option value="">Select Book</option>
+                    </select>
+                    <span asp-validation-for="BookID" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="MemberID" class="form-label fw-bold">Member</label>
+                    <select asp-for="MemberID" class="form-control" asp-items="ViewBag.MemberID">
+                        <option value="">Select Member</option>
+                    </select>
+                    <span asp-validation-for="MemberID" class="text-danger"></span>
+                </div>
+
+                <!-- Borrow Date (default today) -->
+                <div class="col-md-6">
+                    <label asp-for="BorrowDate" class="form-label fw-bold">Borrow Date</label>
+                    <input asp-for="BorrowDate" class="form-control" type="date" value="@today" />
+                    <span asp-validation-for="BorrowDate" class="text-danger"></span>
+                </div>
+
+                <!-- Due Date (default 14 days ahead) -->
+                <div class="col-md-6">
+                    <label asp-for="DueDate" class="form-label fw-bold">Due Date</label>
+                    <input asp-for="DueDate" class="form-control" type="date" value="@twoWeeksLater" />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <input type="submit" value="Save Record" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

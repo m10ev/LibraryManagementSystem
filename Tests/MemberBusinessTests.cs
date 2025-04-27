@@ -156,5 +156,29 @@ namespace Tests
                 Assert.That(context.Members.Find(1), Is.Null);
             }
         }
+
+        [Test]
+        public async Task RenewMembership()
+        {
+            var options = new DbContextOptionsBuilder<LibraryDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+            // Insert seed data into the database using one instance of the context
+
+            using (var context = new LibraryDbContext(options))
+            {
+                context.Members.Add(new Member { Id = 1, FirstName = "Member", LastName = "1", PhoneNumber = "1234567890", MembershipExpireDate = DateTime.Now.AddYears(-1) });
+                context.Members.Add(new Member { Id = 2, FirstName = "Member", LastName = "2", PhoneNumber = "0987654321", MembershipExpireDate = DateTime.Now.AddYears(1 / 2) });
+
+                context.SaveChanges();
+
+                MemberBusiness memberBusiness = new MemberBusiness(context);
+                var member = await memberBusiness.GetAsync(1);
+                await memberBusiness.RenewMembership(member, 1);
+
+                Assert.That(memberBusiness.GetAsync(1).Result.MembershipExpireDate, Is.EqualTo(DateTime.Now.AddYears(1).Date));
+            }
+        }
     }
 }

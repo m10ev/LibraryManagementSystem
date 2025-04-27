@@ -70,6 +70,19 @@ namespace Business
                 }
         }
 
+        public async Task RenewMembership(Member member, int years)
+        {
+            if(member.MembershipExpireDate > DateTime.Now)
+            {
+                member.MembershipExpireDate = member.MembershipExpireDate.AddYears(years).Date;
+            }
+            else
+            {
+                member.MembershipExpireDate = DateTime.Now.AddYears(years).Date;
+                await UpdateAsync(member);
+            }
+        }
+
         // Make sure you clean up if we created the _context ourselves
         public void Dispose()
         {
