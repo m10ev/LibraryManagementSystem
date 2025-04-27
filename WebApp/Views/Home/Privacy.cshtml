@@ -1,6 +1,51 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container my-5">
+    <h1 class="text-center mb-4">Privacy Policy</h1>
+
+    <div class="card shadow p-4">
+        <p class="text-muted">
+            Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information in the Library Management System.
+        </p>
+
+        <h4 class="mt-4 fw-bold">Information We Collect</h4>
+        <ul class="list-unstyled">
+            <li>• Member personal details (e.g., name, phone number, membership expiration date).</li>
+            <li>• Book and author information for cataloging purposes.</li>
+            <li>• Borrowing history to manage loans and returns.</li>
+        </ul>
+
+        <h4 class="mt-4 fw-bold">How We Use Your Information</h4>
+        <ul class="list-unstyled">
+            <li>• To manage memberships and borrowing activities.</li>
+            <li>• To maintain an accurate catalog of books and authors.</li>
+            <li>• To contact members regarding their memberships or borrowed books.</li>
+        </ul>
+
+        <h4 class="mt-4 fw-bold">Protection of Data</h4>
+        <p class="text-muted">
+            We implement appropriate technical and organizational measures to protect your information from unauthorized access, alteration, disclosure, or destruction.
+        </p>
+
+        <h4 class="mt-4 fw-bold">Sharing of Information</h4>
+        <p class="text-muted">
+            We do not sell, trade, or otherwise transfer your personal information to outside parties unless required by law.
+        </p>
+
+        <h4 class="mt-4 fw-bold">Your Rights</h4>
+        <p class="text-muted">
+            You have the right to access, correct, or delete your personal data at any time. Please contact the library staff for assistance.
+        </p>
+
+        <h4 class="mt-4 fw-bold">Changes to This Policy</h4>
+        <p class="text-muted">
+            We may update our Privacy Policy from time to time. All changes will be posted on this page with the updated effective date.
+        </p>
+
+        <div class="mt-5 text-end">
+            <p class="text-muted"><em>Effective Date: @DateTime.Now.ToString("MMMM dd, yyyy")</em></p>
+        </div>
+    </div>
+</div>

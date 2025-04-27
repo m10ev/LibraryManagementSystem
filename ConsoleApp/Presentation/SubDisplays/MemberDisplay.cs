@@ -105,8 +105,8 @@ namespace ConsoleApp.Presentation.SubDisplays
             var member = await memberBusiness.GetAsync(memberId); // Fetch member by ID
             if (member != null)
             {
-                member.MembershipExpireDate = DateTime.Now.AddYears(1).Date; // Renew membership for another year
-                await memberBusiness.UpdateAsync(member); // Update the member in the system
+                var years = uiHelper.ReadIntInput("Enter number of years to renew membership:");
+                await memberBusiness.RenewMembership(member, years); // Renew membership for another year and update
                 Console.WriteLine("Membership renewed successfully.");
             }
             else

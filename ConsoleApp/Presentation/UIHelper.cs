@@ -32,7 +32,7 @@ namespace ConsoleApp.Presentation
             while (true)
             {
                 Console.WriteLine(prompt);
-                if (int.TryParse(Console.ReadLine(), out result))
+                if (int.TryParse(Console.ReadLine(), out result) && result >= 0)
                 {
                     return result;
                 }
@@ -64,7 +64,7 @@ namespace ConsoleApp.Presentation
         }
 
         /// <summary>
-        /// Reads and returns a valid DateTime input from the user in yyyy-MM-dd format.
+        /// Reads and returns a valid DateTime input from the user in dd-MM-yyyy format.
         /// Keeps prompting until a properly formatted and valid date is entered.
         /// </summary>
         /// <param name="prompt">The message to display to the user.</param>
@@ -74,7 +74,7 @@ namespace ConsoleApp.Presentation
             DateTime dateInput;
             while (true)
             {
-                Console.WriteLine($"{prompt} (yyyy-MM-dd)");
+                Console.WriteLine($"{prompt} (dd-MM-yyyy)");
                 string input = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(input))
@@ -83,7 +83,7 @@ namespace ConsoleApp.Presentation
                     continue;
                 }
 
-                if (DateTime.TryParseExact(input, "yyyy-MM-dd",
+                if (DateTime.TryParseExact(input, "dd-MM-yyyy",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out dateInput))
                 {
@@ -91,10 +91,9 @@ namespace ConsoleApp.Presentation
                 }
                 else
                 {
-                    Console.WriteLine("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                    Console.WriteLine("Invalid date format. Please enter the date in dd-MM-yyyy format.");
                 }
             }
         }
-
     }
 }

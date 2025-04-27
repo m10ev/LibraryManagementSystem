@@ -1,0 +1,79 @@
+﻿@model Data.Models.Member
+
+@{
+    ViewData["Title"] = "Renew Membership";
+    var currentDate = Model.MembershipExpireDate.ToString("yyyy-MM-dd");
+    var isExpired = Model.MembershipExpireDate < DateTime.Now;
+}
+
+<h1 class="text-center mb-4">Renew Membership</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow p-4" style="max-width: 600px; width: 100%;">
+        <form asp-action="RenewMembership" asp-route-id="@Model.Id" method="post" id="renewForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+            <p><strong>Current Expiry Date:</strong> <span id="currentDate">@Model.MembershipExpireDate.ToString("dd-MM-yyyy")</span></p>
+
+            <div class="form-group mb-3">
+                <label for="years" class="form-label fw-bold">Add Years</label>
+                <input type="number" class="form-control" name="years" id="yearsInput" min="1" required />
+                <span id="yearsError" class="text-danger" style="display: none;">Please enter a positive number of years.</span>
+            </div>
+
+            <p><strong>New Expiry Date:</strong> <span id="newExpiryDate">—</span></p>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Renew</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const currentDate = new Date("@currentDate");
+        const isExpired = @isExpired.ToString().ToLower();
+        const yearsInput = document.getElementById("yearsInput");
+        const newExpiryDisplay = document.getElementById("newExpiryDate");
+        const yearsError = document.getElementById("yearsError");
+        const form = document.getElementById("renewForm");
+
+        yearsInput.addEventListener("input", function () {
+            const years = parseInt(this.value);
+            if (years > 0) {
+                yearsError.style.display = "none";
+                let updatedDate;
+
+                if (isExpired === "true") {
+                    // If the membership is expired, set new expiry from today
+                    updatedDate = new Date();
+                    updatedDate.setFullYear(updatedDate.getFullYear() + years);
+                } else {
+                    // If the membership is still active, add years to the current expiry date
+                    updatedDate = new Date(currentDate);
+                    updatedDate.setFullYear(updatedDate.getFullYear() + years);
+                }
+
+                // Format the date to show it in a readable format (dd-MM-yyyy)
+                newExpiryDisplay.textContent = updatedDate.toLocaleDateString("en-GB");
+            } else {
+                newExpiryDisplay.textContent = "—";
+                yearsError.style.display = "inline";
+            }
+        });
+
+        form.addEventListener("submit", function (event) {
+            const years = parseInt(yearsInput.value);
+            if (years <= 0) {
+                event.preventDefault(); // Prevent form submission if years are invalid
+                yearsError.style.display = "inline";
+            }
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

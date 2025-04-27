@@ -1,0 +1,140 @@
+﻿@model IEnumerable<Data.Models.Book>
+
+@{
+    ViewData["Title"] = "Books Index";
+}
+
+<h1 class="text-center my-4">Books</h1>
+
+<style>
+    .book-row {
+        display: flex;
+		flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .book-item {
+        width: 100%;
+        background-color: #fff;
+        border-radius: 5px;
+        border-left: 4px solid transparent; /* Left border for emphasis */
+        border-bottom: 1px solid #ddd; /* Gray line between books */
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+        .book-item .book-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center; /* Vertically center the title */
+            justify-content: flex-start; /* Align the title to the left */
+            flex-grow: 1; /* Allow it to take remaining space */
+        }
+
+    /* Additional Info (Genre, Author) on Right */
+    .book-item .book-info {
+        text-align: right;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .book-item a{
+            text-decoration: none;
+            color:inherit;
+    }
+
+    .filter-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    #bookSearch {
+        width: 70%;
+    }
+
+    #genreFilter {
+        width: 20%;
+    }
+</style>
+
+<div class="container">
+    <!-- Search and Filter Row -->
+    <div class="filter-container">
+        <input id="bookSearch" type="text" class="form-control" placeholder="Search by ISBN or Title..." />
+
+        <!-- Filter by Genre -->
+        <select id="genreFilter" class="form-control">
+            <option value="">Select Genre</option>
+            @foreach (var genre in Enum.GetValues(typeof(Data.Enums.Genre)).Cast<Data.Enums.Genre>())
+            {
+                <option value="@genre">@genre</option>
+            }
+        </select>
+    </div>
+
+    <div class="book-row">
+        @foreach (var book in Model)
+        {
+            <div class="book-item" data-title="@book.Title" data-isbn="@book.ISBN" data-genre="@book.Genre">
+                <a asp-action="Details" asp-route-id="@book.Id" class="text-dark h-100 w-100">
+                    <!-- Book Title (on Left) -->
+                    <div class="book-title">
+                        @book.Title
+                    </div>
+
+                    <!-- Additional Info (Genre, Author) on Right -->
+                    <div class="book-info">
+                        <div><strong>Genre:</strong> @book.Genre</div>
+                        <div><strong>Author:</strong> @book.Author?.FirstName @book.Author?.LastName</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="text-center mb-4 mt-4">
+    <a asp-action="Create" class="btn btn-primary">Create New Book</a>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('bookSearch');
+            const genreSelect = document.getElementById('genreFilter');
+            const bookItems = document.querySelectorAll('.book-item');
+
+            // Search by title or ISBN
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                bookItems.forEach(item => {
+                    const title = item.getAttribute('data-title').toLowerCase();
+                    const isbn = item.getAttribute('data-isbn').toLowerCase();
+                    if (title.includes(searchTerm) || isbn.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Filter by genre
+            genreSelect.addEventListener('change', function () {
+                const selectedGenre = this.value.toLowerCase();
+                bookItems.forEach(item => {
+                    const genre = item.getAttribute('data-genre').toLowerCase();
+                    if (selectedGenre === "" || genre === selectedGenre) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+}

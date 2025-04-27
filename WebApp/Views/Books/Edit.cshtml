@@ -1,0 +1,61 @@
+﻿@model Data.Models.Book
+
+@{
+    ViewData["Title"] = "Edit Book";
+}
+
+<h1 class="text-center mb-4">Edit Book</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow p-4" style="max-width: 600px; width: 100%;">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="form-label fw-bold">Title</label>
+                <input asp-for="Title" class="form-control" placeholder="Enter book title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Genre" class="form-label fw-bold">Genre</label>
+                <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Data.Enums.Genre>()">
+                    <option value="">-- Select Genre --</option>
+                </select>
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ISBN" class="form-label fw-bold">ISBN</label>
+                <input asp-for="ISBN" class="form-control" placeholder="Enter ISBN (10-13 characters)" />
+                <span asp-validation-for="ISBN" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PublicationDate" class="form-label fw-bold">Publication Date</label>
+                <input asp-for="PublicationDate" class="form-control" type="date" value="@Model.PublicationDate.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="PublicationDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AuthorID" class="form-label fw-bold">Author</label>
+                <select asp-for="AuthorID" class="form-control" asp-items="ViewBag.AuthorID">
+                    <option value="">-- Select Author --</option>
+                </select>
+                <span asp-validation-for="AuthorID" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

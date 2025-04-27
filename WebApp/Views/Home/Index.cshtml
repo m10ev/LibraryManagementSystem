@@ -1,8 +1,55 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Library Management System";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Welcome to the Library Management System</h1>
+        <p class="lead text-muted mt-3">
+            Manage your books, authors, members, and borrowing activities efficiently and easily.
+        </p>
+    </div>
+
+    <div class="row text-center g-4">
+        <div class="col-md-3">
+            <div class="card shadow p-4 h-100">
+                <i class="bi bi-book-half display-1 text-primary mb-3"></i>
+                <h3 class="fw-bold">Books</h3>
+                <p class="text-muted">Browse, add, edit, and manage the library's collection of books.</p>
+                <a asp-controller="Books" asp-action="Index" class="btn btn-primary mt-3">Manage Books</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-4 h-100">
+                <i class="bi bi-pen display-1 text-info mb-3"></i>
+                <h3 class="fw-bold">Authors</h3>
+                <p class="text-muted">Manage author profiles and associate them with books.</p>
+                <a asp-controller="Authors" asp-action="Index" class="btn btn-info mt-3">Manage Authors</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-4 h-100">
+                <i class="bi bi-people-fill display-1 text-success mb-3"></i>
+                <h3 class="fw-bold">Members</h3>
+                <p class="text-muted">Handle member registrations, details, and memberships.</p>
+                <a asp-controller="Members" asp-action="Index" class="btn btn-success mt-3">Manage Members</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-4 h-100">
+                <i class="bi bi-journal-check display-1 text-warning mb-3"></i>
+                <h3 class="fw-bold">Borrowed Books</h3>
+                <p class="text-muted">Track borrowed books, return dates, and borrowing history.</p>
+                <a asp-controller="BorrowedBooks" asp-action="Index" class="btn btn-warning mt-3">Manage Borrowings</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+}
