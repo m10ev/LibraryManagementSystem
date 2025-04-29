@@ -1,11 +1,8 @@
 ﻿using Business;
-using Data.Models;
 using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Data.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Controllers
 {

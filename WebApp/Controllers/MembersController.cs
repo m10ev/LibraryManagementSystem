@@ -2,8 +2,6 @@
 using Data;
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace WebApp.Controllers
 {

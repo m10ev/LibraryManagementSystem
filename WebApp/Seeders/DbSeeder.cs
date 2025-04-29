@@ -1,5 +1,4 @@
-﻿using Business;
-using Data;
+﻿using Data;
 using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
