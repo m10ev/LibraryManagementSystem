@@ -100,14 +100,17 @@ namespace ConsoleApp.Presentation.SubDisplays
             var borrowedBooks = await borrowedBookBusiness.GetAllAsync(); // Retrieve all borrowed books
             if (borrowedBooks.Any(bb => bb.ReturnDate == null)) // Check for books that are currently borrowed
             {
+                borrowedBooks = borrowedBooks.Where(bb => bb.ReturnDate == null).ToList(); // Filter out books that have not been returned
+                                                                                           // Display each currently borrowed book's details
+                foreach (var borrowedBook in borrowedBooks)
+                {
+                    Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Due Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
+                }
+            }
+            else
+            {
                 Console.WriteLine("No currently borrowed books found."); // Handle case with no currently borrowed books
                 return;
-            }
-            borrowedBooks = borrowedBooks.Where(bb => bb.ReturnDate == null).ToList(); // Filter out books that have not been returned
-            // Display each currently borrowed book's details
-            foreach (var borrowedBook in borrowedBooks)
-            {
-                Console.WriteLine($"Book ID: {borrowedBook.Book.Id}, Book Title: {borrowedBook.Book.Title}, Member Name: {borrowedBook.Member.FirstName} {borrowedBook.Member.LastName}, Borrow Date: {borrowedBook.BorrowDate:yyyy-MM-dd}, Due Date: {borrowedBook.ReturnDate:yyyy-MM-dd}");
             }
         }
 
