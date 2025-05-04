@@ -146,7 +146,7 @@ namespace ConsoleApp.Presentation.SubDisplays
                 Console.WriteLine($"ID: {member.Id}, Name: {member.FirstName} {member.LastName}, Membership Expire Date: {member.MembershipExpireDate:yyyy-MM-dd} Phone Number: {member.PhoneNumber}\nBorrowed Books:");
                 foreach (var borrowedBook in member.BorrowedBooks.OrderBy(bb => bb.BorrowDate).Reverse())
                 {
-                    Book book = await bookBusiness.GetAsync(borrowedBook.BookID);
+                    Book book = await bookBusiness.GetWithIncludesAsync(borrowedBook.BookID);
                     if (borrowedBook.ReturnDate != null)
                     {
                         Console.WriteLine($"Book ID: {book.Id}, Title: {book.Title}, Author: {book.Author.FirstName} {book.Author.LastName}, Borrowed on: {borrowedBook.BorrowDate:yyyy-MM-dd} Return Date: {borrowedBook.DueDate:yyyy-MM-dd}");
